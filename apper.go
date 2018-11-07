@@ -24,3 +24,11 @@ func (*Apper) Stop(transactionID string) error {
 func (*Apper) Terminate(pass string) {
 
 }
+
+func (*Apper) GetVal(key, transactionID string) (interface{}, error) {
+	return nil, nil
+}
+
+func (*Apper) Ready(transactionID string) bool {
+	return true
+}
