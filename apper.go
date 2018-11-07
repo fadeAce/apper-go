@@ -24,7 +24,3 @@ func (*Apper) Stop(transactionID string) error {
 func (*Apper) Terminate(pass string) {
 
 }
-
-func (*Apper) Ls() {
-
-}
