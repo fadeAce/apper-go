@@ -1,0 +1,30 @@
+{
+	"version": 0,
+	"dependencies": [
+		{
+			"importpath": "github.com/golang/protobuf/proto",
+			"repository": "https://github.com/golang/protobuf",
+			"revision": "75dceb112b174be156fa9952e66d3e99945572b4",
+			"branch": "master",
+			"path": "/proto"
+		},
+		{
+			"importpath": "github.com/nats-io/go-nats",
+			"repository": "https://github.com/nats-io/go-nats",
+			"revision": "637977723de645dd0d6f2ae8e7566632c8f0a42c",
+			"branch": "master"
+		},
+		{
+			"importpath": "github.com/nats-io/nkeys",
+			"repository": "https://github.com/nats-io/nkeys",
+			"revision": "f9a6cffeb5910dad4674c41f28abde89ce590d50",
+			"branch": "master"
+		},
+		{
+			"importpath": "github.com/nats-io/nuid",
+			"repository": "https://github.com/nats-io/nuid",
+			"revision": "3024a71c3cbe30667286099921591e6fcc328230",
+			"branch": "master"
+		}
+	]
+}
