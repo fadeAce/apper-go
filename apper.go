@@ -1,15 +1,14 @@
 package apper_go
 
 import (
-	"./logger"
-	"./src/nats-io/go-nats"
+	"apper-go/logger"
+	"github.com/nats-io/go-nats"
 	"bytes"
 	"encoding/gob"
 	"sync"
 	"time"
 )
 
-const natsIP = "47.99.72.199:4222"
 var log = logger.Log
 type Apper struct {
 	conn nats.Conn
