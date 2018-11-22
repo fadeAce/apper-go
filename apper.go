@@ -2,9 +2,9 @@ package apper_go
 
 import (
 	"./logger"
-	"github.com/nats-io/go-nats"
 	"bytes"
 	"encoding/gob"
+	"github.com/nats-io/go-nats"
 	"gopkg.in/yaml.v2"
 	"io/ioutil"
 	"sync"
@@ -12,6 +12,7 @@ import (
 )
 
 var log = logger.Log
+
 type Apper struct {
 	conn nats.Conn
 }
@@ -21,53 +22,53 @@ func GetApper() (*Apper, error) {
 	return &Apper{}, nil
 }
 
-func (a *Apper) Connect(url string) (error) {
+func (a *Apper) Connect(url string) error {
 	nc, err := nats.Connect(url)
 	if err != nil {
-		log.Fatal(err)
-	}else {
+		log.Error(err)
+	} else {
 		a.conn = *nc
 	}
 	return err
 }
 
-func (a *Apper) Start(path string) ( string ,  error) {
+func (a *Apper) Start(path string) (string, error) {
 	var conf Conf
 	f, err := ioutil.ReadFile(path)
 	err = yaml.Unmarshal(f, &conf)
-	nStruct := Nats_data{conf,"struct"}
+	nStruct := Nats_data{conf, "struct"}
 	//序列化
 	var buffer bytes.Buffer
 	encoder := gob.NewEncoder(&buffer) //创建编码器
 	err1 := encoder.Encode(&nStruct)   //编码
-	if err1!=nil{
-		log.Fatal(err1)
+	if err1 != nil {
+		log.Error(err1)
 	}
 	//	fmt.Printf("序列化后：%x\n",buffer.Bytes())
-	nc:=a.conn
+	nc := a.conn
 	defer nc.Close()
 	// Create a unique subject name
 	uniqueReplyTo := nats.NewInbox()
 	// Listen for a single response
 	sub, err := nc.SubscribeSync(uniqueReplyTo)
 	if err != nil {
-		log.Fatal(err)
+		log.Error(err)
 	}
 	// Send the request
-	if err := nc.PublishRequest("cmd", uniqueReplyTo,  buffer.Bytes()); err != nil {
-		log.Fatal(err)
+	if err := nc.PublishRequest("cmd", uniqueReplyTo, buffer.Bytes()); err != nil {
+		log.Error(err)
 	}
 	// Read the reply
-	msg, err := sub.NextMsg(time.Minute*1)
+	msg, err := sub.NextMsg(time.Minute * 1)
 	if err != nil {
-		log.Fatal(err)
+		log.Error(err)
 	}
 	// Use the response
 	//log.Printf("Reply: %s", msg.Data)
 	str := string(msg.Data[:])
 	// Close the connection
 	nc.Close()
-	return str,err
+	return str, err
 }
 
 func (*Apper) Stop(transactionID string) error {
@@ -79,50 +80,50 @@ func (*Apper) Terminate(pass string) {
 }
 
 func (a *Apper) GetVal(key, transactionID string) (interface{}, error) {
-	nStruct := Nats_data1{key,transactionID}
+	nStruct := Nats_data1{key, transactionID}
 	//序列化
 	var buffer bytes.Buffer
 	encoder := gob.NewEncoder(&buffer) //创建编码器
 	err1 := encoder.Encode(&nStruct)   //编码
-	if err1!=nil{
-		log.Fatal(err1)
+	if err1 != nil {
+		log.Error(err1)
 	}
-	nc:=a.conn
+	nc := a.conn
 	defer nc.Close()
 	// Create a unique subject name
 	uniqueReplyTo := nats.NewInbox()
 	// Listen for a single response
 	sub, err := nc.SubscribeSync(uniqueReplyTo)
 	if err != nil {
-		log.Fatal(err)
+		log.Error(err)
 	}
 	// Send the request
-	if err := nc.PublishRequest("cmd", uniqueReplyTo,buffer.Bytes()); err != nil {
-		log.Fatal(err)
+	if err := nc.PublishRequest("cmd", uniqueReplyTo, buffer.Bytes()); err != nil {
+		log.Error(err)
 	}
 	// Read the reply
-	msg, err := sub.NextMsg(time.Minute*1)
+	msg, err := sub.NextMsg(time.Minute * 1)
 	if err != nil {
-		log.Fatal(err)
+		log.Error(err)
 	}
 	// Use the response
 	//log.Printf("Reply: %s", msg.Data)
-	byteEn:=msg.Data
+	byteEn := msg.Data
 	decoder := gob.NewDecoder(bytes.NewReader(byteEn)) //创建解密器
 	var nterf interface{}
-	err2 := decoder.Decode(&nterf)//解密
-	if err2!=nil{
-		log.Fatal(err2)
+	err2 := decoder.Decode(&nterf) //解密
+	if err2 != nil {
+		log.Error(err2)
 	}
 	//fmt.Println("反序列化后：",nterf)
 	nc.Close()
-	return nterf,err
+	return nterf, err
 
 }
 
 func (a *Apper) Ready(transactionID string) bool {
-	var  boo bool = false
-	nc:= a.conn
+	var boo bool = false
+	nc := a.conn
 	defer nc.Close()
 	// Use a WaitGroup to wait for a message to arrive
 	wg := sync.WaitGroup{}
@@ -135,7 +136,7 @@ func (a *Apper) Ready(transactionID string) bool {
 		}
 		wg.Done()
 	}); err != nil {
-		log.Fatal(err)
+		log.Error(err)
 	}
 	// Wait for a message to come in
 	wg.Wait()
