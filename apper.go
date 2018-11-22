@@ -5,6 +5,8 @@ import (
 	"github.com/nats-io/go-nats"
 	"bytes"
 	"encoding/gob"
+	"gopkg.in/yaml.v2"
+	"io/ioutil"
 	"sync"
 	"time"
 )
@@ -29,11 +31,15 @@ func (a *Apper) Connect(url string) (error) {
 	return err
 }
 
-func (a *Apper) Start(path string ,n_struct Nats_data) ( string ,  error) {
+func (a *Apper) Start(path string) ( string ,  error) {
+	var conf Conf
+	f, err := ioutil.ReadFile(path)
+	err = yaml.Unmarshal(f, &conf)
+	nStruct := Nats_data{conf,"struct"}
 	//序列化
 	var buffer bytes.Buffer
-	encoder := gob.NewEncoder(&buffer)//创建编码器
-	err1 := encoder.Encode(&n_struct)//编码
+	encoder := gob.NewEncoder(&buffer) //创建编码器
+	err1 := encoder.Encode(&nStruct)   //编码
 	if err1!=nil{
 		log.Fatal(err1)
 	}
@@ -73,11 +79,11 @@ func (*Apper) Terminate(pass string) {
 }
 
 func (a *Apper) GetVal(key, transactionID string) (interface{}, error) {
-	n_struct := Nats_data1{key,transactionID}
+	nStruct := Nats_data1{key,transactionID}
 	//序列化
 	var buffer bytes.Buffer
-	encoder := gob.NewEncoder(&buffer)//创建编码器
-	err1 := encoder.Encode(&n_struct)//编码
+	encoder := gob.NewEncoder(&buffer) //创建编码器
+	err1 := encoder.Encode(&nStruct)   //编码
 	if err1!=nil{
 		log.Fatal(err1)
 	}
