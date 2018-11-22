@@ -21,6 +21,25 @@ type Command struct {
 	Configs ConfJ  `json:"config"`
 	Cmd     string `json:"cmd"`
 }
+
+type Conf struct {
+	Sites map[string]Site `yaml:"sites"`
+}
+
+type ApperConf struct {
+	Database string `yaml:"database"`
+}
+
+type Single struct {
+	Type string
+	Rule string
+	Key  string
+	Url  string
+}
+
+type Site struct {
+	Single []Single `yaml:"singles"`
+}
 //传 Start 用到
 type Nats_data struct {
 	Conf Conf
