@@ -6,13 +6,7 @@ import (
 	"github.com/nats-io/go-nats"
 	"mining-pool/service/eth"
 	"mining-pool/types"
-
-	//"mining-pool/service/eth"
-	//"mining-pool/types"
-
 	"apper-go/logger"
-	//"mining-pool/service/eth"
-	//"mining-pool/types"
 	"sync"
 	"time"
 )
