@@ -3,6 +3,7 @@ package apper_go
 import (
 	"bytes"
 	"encoding/gob"
+	"encoding/json"
 	"github.com/nats-io/go-nats"
 	"gopkg.in/yaml.v2"
 	"io/ioutil"
@@ -33,29 +34,30 @@ func (a *Apper) Start(path string) (string, error) {
 	var conf Conf
 	f, err := ioutil.ReadFile(path)
 	err = yaml.Unmarshal(f, &conf)
-	nStruct := Nats_data{conf, "struct"}
+	nStruct := NatsData{conf, "start"}
 	//序列化
-	var buffer bytes.Buffer
-	encoder := gob.NewEncoder(&buffer) //创建编码器
-	err1 := encoder.Encode(&nStruct)   //编码
+	cont, err1 := json.Marshal(&nStruct) //编码
 	if err1 != nil {
 		Log.Error(err1)
 	}
 	//	fmt.Printf("序列化后：%x\n",buffer.Bytes())
 	nc := a.conn
-	defer nc.Close()
 	// Send the request
 	msg := &nats.Msg{}
-	if msg, err = nc.Request("cmd", buffer.Bytes(), time.Minute*1); err != nil {
+	if msg, err = nc.Request("cmd", cont, time.Minute*1); err != nil {
 		Log.Error(err)
 	}
 	str := string(msg.Data[:])
 	// Close the connection
-	nc.Close()
 	return str, err
 }
 
-func (*Apper) Stop(transactionID string) error {
+func (a *Apper) Stop(transactionID string) error {
+	return nil
+}
+
+func (a *Apper) disconnect() error {
+	a.conn.Close()
 	return nil
 }
 
@@ -64,7 +66,7 @@ func (*Apper) Terminate(pass string) {
 }
 
 func (a *Apper) GetVal(key, transactionID string) (interface{}, error) {
-	nStruct := Nats_data1{key, transactionID}
+	nStruct := NatsData1{key, transactionID}
 	//序列化
 	var buffer bytes.Buffer
 	encoder := gob.NewEncoder(&buffer) //创建编码器
@@ -100,7 +102,6 @@ func (a *Apper) GetVal(key, transactionID string) (interface{}, error) {
 		Log.Error(err2)
 	}
 	//fmt.Println("反序列化后：",nterf)
-	nc.Close()
 	return nterf, err
 
 }
@@ -125,6 +126,5 @@ func (a *Apper) Ready(transactionID string) bool {
 	// Wait for a message to come in
 	wg.Wait()
 	// Close the connection
-	nc.Close()
 	return boo
 }

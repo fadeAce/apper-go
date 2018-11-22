@@ -40,13 +40,15 @@ type Single struct {
 type Site struct {
 	Single []Single `yaml:"singles"`
 }
+
 //传 Start 用到
-type Nats_data struct {
-	Conf Conf
-	Type string
+type NatsData struct {
+	Conf Conf   `json:"config"`
+	Type string `json:"cmd"`
 }
+
 //得到 Start 用到
-type Nats_data1 struct {
-	Key string
+type NatsData1 struct {
+	Key  string
 	TXID string
 }
