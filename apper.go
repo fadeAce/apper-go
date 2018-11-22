@@ -44,24 +44,11 @@ func (a *Apper) Start(path string) (string, error) {
 	//	fmt.Printf("序列化后：%x\n",buffer.Bytes())
 	nc := a.conn
 	defer nc.Close()
-	// Create a unique subject name
-	uniqueReplyTo := nats.NewInbox()
-	// Listen for a single response
-	sub, err := nc.SubscribeSync(uniqueReplyTo)
-	if err != nil {
-		Log.Error(err)
-	}
 	// Send the request
-	if err := nc.PublishRequest("cmd", uniqueReplyTo, buffer.Bytes()); err != nil {
+	msg := &nats.Msg{}
+	if msg, err = nc.Request("cmd", buffer.Bytes(), time.Minute*1); err != nil {
 		Log.Error(err)
 	}
-	// Read the reply
-	msg, err := sub.NextMsg(time.Minute * 1)
-	if err != nil {
-		Log.Error(err)
-	}
-	// Use the response
-	//Log.Printf("Reply: %s", msg.Data)
 	str := string(msg.Data[:])
 	// Close the connection
 	nc.Close()
