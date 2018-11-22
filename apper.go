@@ -1,16 +1,14 @@
 package apper_go
 
 import (
+	"./logger"
+	"./src/nats-io/go-nats"
 	"bytes"
 	"encoding/gob"
-	"github.com/nats-io/go-nats"
-	"mining-pool/service/eth"
-	"mining-pool/types"
-	"apper-go/logger"
 	"sync"
 	"time"
 )
-
+  
 const natsIP = "47.99.72.199:4222"
 var log = logger.Log
 type Apper struct {
@@ -32,9 +30,7 @@ func (a *Apper) Connect(url string) (error) {
 	return err
 }
 
-func (a *Apper) Start(path string) ( string ,  error) {
-	confs,_ :=eth.GetETHConf(eth.ETH_yaml_path)
-	n_struct := types.Nats_data{*confs,"struct"}
+func (a *Apper) Start(path string ,n_struct Nats_data) ( string ,  error) {
 	//序列化
 	var buffer bytes.Buffer
 	encoder := gob.NewEncoder(&buffer)//创建编码器
@@ -78,7 +74,7 @@ func (*Apper) Terminate(pass string) {
 }
 
 func (a *Apper) GetVal(key, transactionID string) (interface{}, error) {
-	n_struct := types.Nats_data1{key,transactionID}
+	n_struct := Nats_data1{key,transactionID}
 	//序列化
 	var buffer bytes.Buffer
 	encoder := gob.NewEncoder(&buffer)//创建编码器
