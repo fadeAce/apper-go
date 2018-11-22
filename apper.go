@@ -1,7 +1,7 @@
 package apper_go
 
 import (
-	"apper-go/logger"
+	"./logger"
 	"github.com/nats-io/go-nats"
 	"bytes"
 	"encoding/gob"
