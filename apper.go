@@ -8,7 +8,7 @@ import (
 	"sync"
 	"time"
 )
-  
+
 const natsIP = "47.99.72.199:4222"
 var log = logger.Log
 type Apper struct {
