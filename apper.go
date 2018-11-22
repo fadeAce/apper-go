@@ -1,7 +1,6 @@
 package apper_go
 
 import (
-	"./logger"
 	"bytes"
 	"encoding/gob"
 	"github.com/nats-io/go-nats"
@@ -11,10 +10,8 @@ import (
 	"time"
 )
 
-var log = logger.Log
-
 type Apper struct {
-	conn nats.Conn
+	conn *nats.Conn
 }
 
 // singleton mode
@@ -25,9 +22,9 @@ func GetApper() (*Apper, error) {
 func (a *Apper) Connect(url string) error {
 	nc, err := nats.Connect(url)
 	if err != nil {
-		log.Error(err)
+		Log.Error(err)
 	} else {
-		a.conn = *nc
+		a.conn = nc
 	}
 	return err
 }
@@ -42,7 +39,7 @@ func (a *Apper) Start(path string) (string, error) {
 	encoder := gob.NewEncoder(&buffer) //创建编码器
 	err1 := encoder.Encode(&nStruct)   //编码
 	if err1 != nil {
-		log.Error(err1)
+		Log.Error(err1)
 	}
 	//	fmt.Printf("序列化后：%x\n",buffer.Bytes())
 	nc := a.conn
@@ -52,19 +49,19 @@ func (a *Apper) Start(path string) (string, error) {
 	// Listen for a single response
 	sub, err := nc.SubscribeSync(uniqueReplyTo)
 	if err != nil {
-		log.Error(err)
+		Log.Error(err)
 	}
 	// Send the request
 	if err := nc.PublishRequest("cmd", uniqueReplyTo, buffer.Bytes()); err != nil {
-		log.Error(err)
+		Log.Error(err)
 	}
 	// Read the reply
 	msg, err := sub.NextMsg(time.Minute * 1)
 	if err != nil {
-		log.Error(err)
+		Log.Error(err)
 	}
 	// Use the response
-	//log.Printf("Reply: %s", msg.Data)
+	//Log.Printf("Reply: %s", msg.Data)
 	str := string(msg.Data[:])
 	// Close the connection
 	nc.Close()
@@ -86,7 +83,7 @@ func (a *Apper) GetVal(key, transactionID string) (interface{}, error) {
 	encoder := gob.NewEncoder(&buffer) //创建编码器
 	err1 := encoder.Encode(&nStruct)   //编码
 	if err1 != nil {
-		log.Error(err1)
+		Log.Error(err1)
 	}
 	nc := a.conn
 	defer nc.Close()
@@ -95,25 +92,25 @@ func (a *Apper) GetVal(key, transactionID string) (interface{}, error) {
 	// Listen for a single response
 	sub, err := nc.SubscribeSync(uniqueReplyTo)
 	if err != nil {
-		log.Error(err)
+		Log.Error(err)
 	}
 	// Send the request
 	if err := nc.PublishRequest("cmd", uniqueReplyTo, buffer.Bytes()); err != nil {
-		log.Error(err)
+		Log.Error(err)
 	}
 	// Read the reply
 	msg, err := sub.NextMsg(time.Minute * 1)
 	if err != nil {
-		log.Error(err)
+		Log.Error(err)
 	}
 	// Use the response
-	//log.Printf("Reply: %s", msg.Data)
+	//Log.Printf("Reply: %s", msg.Data)
 	byteEn := msg.Data
 	decoder := gob.NewDecoder(bytes.NewReader(byteEn)) //创建解密器
 	var nterf interface{}
 	err2 := decoder.Decode(&nterf) //解密
 	if err2 != nil {
-		log.Error(err2)
+		Log.Error(err2)
 	}
 	//fmt.Println("反序列化后：",nterf)
 	nc.Close()
@@ -136,7 +133,7 @@ func (a *Apper) Ready(transactionID string) bool {
 		}
 		wg.Done()
 	}); err != nil {
-		log.Error(err)
+		Log.Error(err)
 	}
 	// Wait for a message to come in
 	wg.Wait()

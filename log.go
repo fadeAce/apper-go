@@ -1,16 +1,16 @@
-package logger
+package apper_go
 
 import (
-	logger "github.com/sirupsen/logrus"
-	"time"
-	"path"
-	"github.com/pkg/errors"
 	"github.com/lestrrat/go-file-rotatelogs"
+	"github.com/pkg/errors"
 	"github.com/rifflock/lfshook"
+	logger "github.com/sirupsen/logrus"
 	"os"
+	"path"
+	"time"
 )
 
-var Log = func() *logger.Logger{
+var Log = func() *logger.Logger {
 	log := logger.New()
 	log.SetLevel(logger.DebugLevel)
 	os.Mkdir("log", os.ModePerm)

@@ -1,8 +1,8 @@
 package test
 
 import (
-	apper "../../apper-go"
 	"fmt"
+	apper "gitlab.pandaminer.com/apper-go"
 	"testing"
 )
 
@@ -11,7 +11,7 @@ func Test_integrated(t *testing.T) {
 	if err != nil {
 		fmt.Print("err")
 	}
-	err = app.Connect("localhost:4222")
+	err = app.Connect("nats://127.0.0.1:4222")
 	if err != nil {
 		fmt.Print("err")
 	}

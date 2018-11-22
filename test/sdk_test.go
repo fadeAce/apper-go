@@ -1,8 +1,8 @@
 package test
 
 import (
-	apper "../../apper-go"
 	"fmt"
+	apper "gitlab.pandaminer.com/apper-go"
 	"testing"
 )
 
