@@ -56,7 +56,7 @@ func (a *Apper) Stop(transactionID string) error {
 	return nil
 }
 
-func (a *Apper) disconnect() error {
+func (a *Apper) Disconnect() error {
 	a.conn.Close()
 	return nil
 }
